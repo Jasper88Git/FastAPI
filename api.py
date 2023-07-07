@@ -1,5 +1,5 @@
 # uvicorn api:app --port 8000 --reload
-
+# uvicorn 파일명:인스턴스 --port 포트번호 (--reload)
 from fastapi import FastAPI
 from todo import todo_router
 
@@ -12,5 +12,4 @@ async def welcome() -> dict:
         "message": "Hello World"
     }
 
-
-app.include_router(todo_router)
+app.include_router(todo_router) # 외부 라우터 추가
