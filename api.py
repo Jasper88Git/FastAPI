@@ -1,4 +1,4 @@
-# uvicorn api:app --port 8000 --reload
+# uvicorn api:app --port 8000 --reload (file:instace)
 
 from fastapi import FastAPI
 from todo import todo_router
