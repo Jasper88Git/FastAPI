@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-# uvicorn api:app --port 8000 --reload (file:instace)
-
-=======
 # uvicorn api:app --port 8000 --reload
 # uvicorn 파일명:인스턴스 --port 포트번호 (--reload)
->>>>>>> 0f5cce8760bccd0c76b9ab6a47a6b3bdc5c8480b
+
 from fastapi import FastAPI
 from todo import todo_router
 
@@ -17,4 +13,4 @@ async def welcome() -> dict:
         "message": "Hello World"
     }
 
-app.include_router(todo_router) # 외부 라우터 추가
+app.include_router(todo_router) # 외부 라우터 추가git commit -m "Resolve merge conflicts"
