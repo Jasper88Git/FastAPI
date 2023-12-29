@@ -4,13 +4,14 @@
 from fastapi import FastAPI
 from todo import todo_router
 
-app = FastAPI()
+app = FastAPI() # 라우트 생성
 
 # curl http://127.0.0.1:8000/
-@app.get("/")
+@app.get("/") # 데코레이터 -> 라우트가 호출될 때 실행할 처리
 async def welcome() -> dict:
     return {
         "message": "Hello World"
     }
 
-app.include_router(todo_router) # 외부 라우터 추가git commit -m "Resolve merge conflicts"
+# 외부 라우터 추가
+app.include_router(todo_router)
