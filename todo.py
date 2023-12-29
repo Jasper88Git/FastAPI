@@ -1,20 +1,21 @@
-# curl -X GET 'http://127.0.0.1:8000/todo' -H 'accept: application/json'
 # curl -X GET http://127.0.0.1:8000/todo -H "accept: application/json" (windows)
-# 경로 매개변수
 # curl -X GET http://127.0.0.1:8000/todo/1 -H "accept: application/json"
 
 # curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{}'
-# curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":1, "item":"First Todo is to finish this book!"}'
-# curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":2, "item":"Validation models help with input types"}'
 # curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":1, "item":"Example schema!"}'
+# curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":2, "item":"Validation models help with input types"}'
+# curl -X POST http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"item":This todo will be retrieved without exposing my ID!"}'
 
-# curl -X PUT http://127.0.0.1:8000/todo -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":1, "item":"Read the next chapter of the book"}'
+# curl -X PUT http://127.0.0.1:8000/todo/1 -H "accept: application/json" -H "Content-Type: application/json" -d '{"id":1, "item": "Read the next chapter of the book."}'
+
+
+# curl -X DELETE http://127.0.0.1:8000/todo/1 -H "accept: application/json"
 
 # APIRouter: 다중라우팅 경로 처리 클래스
-# Path: 다른 인수와 경로 매개변수를 구분하는 역할
 # from fastapi import APIRouter
 from fastapi import APIRouter, Path
-from model import Todo, TodoItem
+# from model import Todo, TodoItem
+from model import Todo, TodoItem, TodoItems
 
 todo_router = APIRouter()
 
@@ -40,19 +41,19 @@ async def retrieve_todos() -> dict:
     }
 
 
-# @todo_router.get("/todo/{todo_id}") # 경로 매개변수 {}
-# async def get_single_todo(todo_id: int) -> dict: 
-#     for todo in todo_list:
-#         if todo.id ==  todo_id:
-#             return {
-#                 "todo": todo
-#             }
-#         return {
-#             "message": "Todo with supplied ID doesn't exist."
-#         }
+@todo_router.get("/todo/{todo_id}") # 경로 매개변수 {}
+async def get_single_todo(todo_id: int) -> dict: 
+    for todo in todo_list:
+        if todo.id ==  todo_id:
+            return {
+                "todo": todo
+            }
+        return {
+            "message": "Todo with supplied ID doesn't exist."
+        }
     
 @todo_router.get("/todo/{todo_id}")
-async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to retrieve.")) -> dict: 
+async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to retrieve.")) -> dict: # Path: 다른 인수와 경로 매개변수를 구분하는 역할
     for todo in todo_list:
         if todo.id ==  todo_id:
             return {
@@ -62,6 +63,13 @@ async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to 
             "message": "Todo with supplied ID doesn't exist."
         }
 
+@todo_router.get("/todo", response_model=TodoItems)
+async def retrieve_todo() -> dict:
+    return {
+        "todos": todo_list
+    }
+
+# 기존 ITEM을 변경하는 PUT 메서드
 @todo_router.put("/todo/{todo_id}")
 async def update_todo(todo_data: TodoItem, todo_id: int = Path(..., title="The ID of the todo to be updated.")) -> dict:
     for todo in todo_list:
@@ -74,22 +82,23 @@ async def update_todo(todo_data: TodoItem, todo_id: int = Path(..., title="The I
         "message": "Todo with supplied ID doesn't exist."
     }
 
-# @todo_router.delete("/todo/{todo_id}")
-# async def delete_single_todo(todo_id: int) -> dict:
-#   for index in range(len(todo_list)):
-#       todo = todo_list[index]
-#       if todo.id == todo_id:
-#           todo_list.pop(index)
-#           return {
-#               "message": "Todo deleted successfully."
-#           }
-#   return {
-#       "message": "Todo with supplied ID doesn't exist."
-#   }
+# 기존 ITEM을 삭제하는 DELETE 메서드
+@todo_router.delete("/todo/{todo_id}")
+async def delete_single_todo(todo_id: int) -> dict:
+  for index in range(len(todo_list)):
+      todo = todo_list[index]
+      if todo.id == todo_id:
+          todo_list.pop(index)
+          return {
+              "message": "Todo deleted successfully."
+          }
+  return {
+      "message": "Todo with supplied ID doesn't exist."
+  }
 
-# @todo_router.delete("/todo")
-# async def delete_all_todo() -> dict:
-#   todo_list.clear()
-#   return {
-#       "message": "Todos deleted successfully."
-#   }
+@todo_router.delete("/todo")
+async def delete_all_todo() -> dict:
+  todo_list.clear()
+  return {
+      "message": "Todos deleted successfully."
+  }
